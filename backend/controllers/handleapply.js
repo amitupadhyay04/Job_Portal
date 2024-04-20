@@ -55,13 +55,13 @@ function sendMail(email,job_title) {
     port: 465,
     secure: true,
     auth: {
-      user: "uamit9920@gmail.com",
-      pass: "dswijnkuspmulxvl",
+      user: "sample@gmail.com",
+      pass: "password",
     },
   });
 
   const mailOptions = {
-    from: 'uamit9920@gmail.com',
+    from: 'sample@gmail.com',
     to:email,
     subject: `Please complete the form for ${job_title}` ,
     text: `Your form for ${job_title} is not complete , Please complete it.Unfortunately, it seems that we have not yet received your submission. 
