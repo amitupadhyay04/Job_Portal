@@ -30,6 +30,16 @@ const userSchema = new mongoose.Schema({
     required: [true, "Please select a role"],
     enum: ["Job Seeker", "Employer"],
   },
+  document: {
+    public_id: {
+      type: String, 
+      required: true,
+    },
+    url: {
+      type: String, 
+      required: true,
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now,
