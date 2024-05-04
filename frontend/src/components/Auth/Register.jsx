@@ -33,6 +33,7 @@ const Register = () => {
     formData.append("password", password);
     formData.append("role", role);
     formData.append("document", document);
+    
     try {
       const { data } = await axios.post(
         "http://localhost:4000/api/v1/user/register",
@@ -59,13 +60,32 @@ const Register = () => {
   if (isAuthorized) {
     return <Navigate to={"/"} />;
   }
+  
+  const docRequire = () => {
+    if( role === "Job Seeker"){
+      return  ( 
+      <div className="inputTag">
+      <label>Document Upload</label>
+       <div>
+        <input
+          type="file"
+          name="document"
+          accept=".pdf, .jpg, .png"
+          onChange={handleDocChange}
+        />
+        <FaPhotoFilm />
+       </div>
+      </div>
+      );
+    }
+  };
 
   return (
     <>
       <section className="authPage">
         <div className="container">
           <div className="header">
-            <img src="/JobZeelogo.png" alt="logo" />
+            <img src="/jobsearch.jpg" alt="logo" />
             <h3>Create a new account</h3>
           </div>
           <form>
@@ -128,18 +148,8 @@ const Register = () => {
                 <RiLock2Fill />
               </div>
             </div>
-            <div className="inputTag">
-              <label>Document Upload</label>
-              <div>
-                <input
-                  type="file"
-                  name="document"
-                  accept=".pdf, .jpg, .png"
-                  onChange={handleDocChange}
-                />
-                <FaPhotoFilm />
-              </div>
-            </div>
+            
+           {docRequire()}
             <button type="submit" onClick={handleRegister}>
               Register
             </button>

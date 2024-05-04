@@ -4,12 +4,23 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import ResumeModal from "./ResumeModal";
+import { pdfjs } from 'react-pdf';
+import PdfComp from "./PdfComp";
+import DocModal from "./DocModal";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.js',
+  import.meta.url,
+).toString();
 
 const MyApplications = () => {
   const { user } = useContext(Context);
   const [applications, setApplications] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [resumeImageUrl, setResumeImageUrl] = useState("");
+  const [docModalOpen, setDocModalOpen] = useState(false);
+  const [docPdfUrl, setDocPdfUrl] = useState("");
+
 
   const { isAuthorized } = useContext(Context);
   const navigateTo = useNavigate();
@@ -64,8 +75,18 @@ const MyApplications = () => {
     setModalOpen(true);
   };
 
+  const openDocModal = (pdfUrl) => {
+    setDocPdfUrl(pdfUrl);
+    setDocModalOpen(true);
+  };
+
+
   const closeModal = () => {
     setModalOpen(false);
+  };
+
+  const closeDocModal = () => {
+    setDocModalOpen(false);
   };
 
   return (
@@ -105,6 +126,7 @@ const MyApplications = () => {
                   element={element}
                   key={element._id}
                   openModal={openModal}
+                  openDocModal={ openDocModal}
                 />
               );
             })
@@ -113,6 +135,9 @@ const MyApplications = () => {
       )}
       {modalOpen && (
         <ResumeModal imageUrl={resumeImageUrl} onClose={closeModal} />
+      )}
+      {docModalOpen && (
+        <DocModal pdfUrl={docPdfUrl} onClose={closeDocModal} />
       )}
     </section>
   );
@@ -158,7 +183,16 @@ const JobSeekerCard = ({ element, deleteApplication, openModal }) => {
   );
 };
 
-const EmployerCard = ({ element, openModal }) => {
+
+const EmployerCard = ({ element, openModal , openDocModal }) => {
+
+  const [showPdf, setShowPdf] = useState(false);
+
+  const togglePdfVisibility = () => {
+    setShowPdf(!showPdf);
+  };
+
+  
   return (
     <>
       <div className="job_seeker_card">
@@ -186,7 +220,13 @@ const EmployerCard = ({ element, openModal }) => {
             onClick={() => openModal(element.resume.url)}
           />
         </div>
+        <button onClick={() => openDocModal(element.document.url)} >Show Document</button>
+        {/* <PdfComp pdffile={element.document.url} /> */}
+        
       </div>
     </>
   );
 };
+
+
+

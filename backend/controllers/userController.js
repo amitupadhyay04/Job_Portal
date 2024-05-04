@@ -5,36 +5,35 @@ import { sendToken } from "../utils/jwtToken.js";
 import cloudinary from "cloudinary";
 
 export const register = catchAsyncErrors(async (req, res, next) => {
-
   const { name, email, phone, password, role } = req.body;
-  if (!name || !email || !phone || !password || !role ) {
+  
+  if (!name || !email || !phone || !password || !role) {
     return next(new ErrorHandler("Please fill full form!"));
   }
-  const { document } = req.files;
+  
   const isEmail = await User.findOne({ email });
   if (isEmail) {
     return next(new ErrorHandler("Email already registered!"));
   }
-
- 
-
   
-  const allowedFormats = ["image/png", "image/jpeg", "image/webp"];
-  if (!allowedFormats.includes(document.mimetype)) {
-    return next(
-      new ErrorHandler("Invalid file type. Please upload a PNG file.", 400)
-    );
-  }
-  const cloudinaryResponse = await cloudinary.uploader.upload(
-    document.tempFilePath
-  );
+  let cloudinaryResponse = null; // Define cloudinaryResponse
+  
+  if (req.files && req.files.document) {
 
-  if (!cloudinaryResponse || cloudinaryResponse.error) {
-    console.error(
-      "Cloudinary Error:",
-      cloudinaryResponse.error || "Unknown Cloudinary error"
-    );
-    return next(new ErrorHandler("Failed to upload Document to Cloudinary", 500));
+    const { document } = req.files
+    const allowedFormats = ["image/png", "image/jpeg", "image/webp","application/pdf"];
+    if (!allowedFormats.includes(document.mimetype)) {
+      return next(new ErrorHandler("Invalid file type. Please upload a PNG, JPEG, WebP, or PDF file.", 400));
+    }
+    cloudinaryResponse = await cloudinary.uploader.upload(document.tempFilePath);
+
+    if (!cloudinaryResponse || cloudinaryResponse.error) {
+      console.error(
+        "Cloudinary Error:",
+        cloudinaryResponse.error || "Unknown Cloudinary error"
+      );
+      return next(new ErrorHandler("Failed to upload Document to Cloudinary", 500));
+    }
   }
 
   const user = await User.create({
@@ -43,13 +42,14 @@ export const register = catchAsyncErrors(async (req, res, next) => {
     phone,
     password,
     role,
-    document:{
-      public_id: cloudinaryResponse.public_id,
-      url: cloudinaryResponse.secure_url,
+    document: {
+      public_id: cloudinaryResponse ? cloudinaryResponse.public_id : null,
+      url: cloudinaryResponse ? cloudinaryResponse.secure_url : null,
     },
   });
   sendToken(user, 201, res, "User Registered!");
 });
+
 
 export const login = catchAsyncErrors(async (req, res, next) => {
   const { email, password, role } = req.body;

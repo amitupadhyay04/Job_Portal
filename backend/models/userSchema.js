@@ -33,11 +33,17 @@ const userSchema = new mongoose.Schema({
   document: {
     public_id: {
       type: String, 
-      required: true,
+      required: function() {
+        // Require public_id if role is "Job Seeker"
+        return this.role === "Job Seeker";
+      },
     },
     url: {
       type: String, 
-      required: true,
+      required: function() {
+        // Require public_id if role is "Job Seeker"
+        return this.role === "Job Seeker";
+      },
     },
   },
   createdAt: {

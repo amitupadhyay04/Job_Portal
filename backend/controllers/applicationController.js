@@ -3,6 +3,7 @@ import ErrorHandler from "../middlewares/error.js";
 import { Application } from "../models/applicationSchema.js";
 import { Job } from "../models/jobSchema.js";
 import cloudinary from "cloudinary";
+import { User } from "../models/userSchema.js";
 
 export const postApplication = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
@@ -33,6 +34,7 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
     );
     return next(new ErrorHandler("Failed to upload Resume to Cloudinary", 500));
   }
+  
   const { name, email, coverLetter, phone, address, jobId } = req.body;
   const applicantID = {
     user: req.user._id,
@@ -62,6 +64,13 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
   ) {
     return next(new ErrorHandler("Please fill all fields.", 400));
   }
+
+  // Retrieve document information from the current user
+  const currentUser = await User.findById(req.user._id);
+  if (!currentUser) {
+    return next(new ErrorHandler("User not found!", 404));
+  }
+
   const application = await Application.create({
     name,
     email,
@@ -74,14 +83,20 @@ export const postApplication = catchAsyncErrors(async (req, res, next) => {
       public_id: cloudinaryResponse.public_id,
       url: cloudinaryResponse.secure_url,
     },
-    jobID: jobId
+    document: { // Assign document property from the current user
+      public_id: currentUser.document.public_id,
+      url: currentUser.document.url,
+    },
+    jobID: jobId,
   });
+  
   res.status(200).json({
     success: true,
     message: "Application Submitted!",
     application,
   });
 });
+
 
 export const employerGetAllApplications = catchAsyncErrors(
   async (req, res, next) => {

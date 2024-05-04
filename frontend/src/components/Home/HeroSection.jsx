@@ -36,9 +36,7 @@ const HeroSection = () => {
             <h1>Find a job that suits</h1>
             <h1>your interests and skills</h1>
             <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorem
-              voluptate repellat modi quidem aliquid eaque ducimus ipsa et,
-              facere mollitia!
+            Embark on Your Career Quest: Armed with Courage, Curiosity, and Resilience, Let's Navigate the Uncharted Territory of Success and Achievement!
             </p>
           </div>
           <div className="image">

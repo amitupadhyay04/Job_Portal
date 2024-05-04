@@ -59,6 +59,16 @@ const applicationSchema = new mongoose.Schema({
       required: true,
     },
   },
+  document:{
+    public_id: {
+      type: String, 
+      required: true,
+    },
+    url: {
+      type: String, 
+      required: true,
+    },
+  },
   jobID: {
     type: mongoose.Schema.Types.ObjectId,
     ref : "Job",
