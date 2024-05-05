@@ -55,8 +55,8 @@ function sendMail(email,job_title) {
     port: 465,
     secure: true,
     auth: {
-      user: "sample@gmail.com",
-      pass: "password",
+      user: process.env.SMTP_USERNAME,
+      pass: process.env.SMTP_PASSWORD,
     },
   });
 
